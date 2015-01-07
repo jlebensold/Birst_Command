@@ -65,16 +65,11 @@ module Birst_Command
     #
     # Returns - The soap result as a hash
     def command(command_name, *args)
-      @client = new_client
       response_key = "#{command_name}_response".to_sym
       result_key = "#{command_name}_result".to_sym
 
       message = args.last.is_a?(Hash) ? args.pop : {}
       pp "COOKIE"
-      pp @auth_cookie
-      #@client.set_cookie @auth_cookie
-      pp @client
-      return
       result = @client.call command_name,
                             cookies: [@auth_cookie],
                             message: { :token => @login_token }.merge(message)
