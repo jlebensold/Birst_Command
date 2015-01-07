@@ -27,6 +27,7 @@ module Birst_Command
 
     attr_reader :login_token
     attr_reader :auth_cookie
+    attr_reader :client
 
 
     # Public: Login to Birst using the username and password.  After login,
@@ -38,7 +39,7 @@ module Birst_Command
       response = @client.call(:login,
         cookies: @auth_cookie,
         message: {
-          username: @username, 
+          username: @username,
           password: decrypt(@password)
         })
 
@@ -64,18 +65,23 @@ module Birst_Command
     #
     # Returns - The soap result as a hash
     def command(command_name, *args)
+      @client = new_client
       response_key = "#{command_name}_response".to_sym
       result_key = "#{command_name}_result".to_sym
 
       message = args.last.is_a?(Hash) ? args.pop : {}
+      pp "COOKIE"
+      pp @auth_cookie
+      #@client.set_cookie @auth_cookie
+      pp @client
+      return
       result = @client.call command_name,
-                            cookies: @auth_cookie,
+                            cookies: [@auth_cookie],
                             message: { :token => @login_token }.merge(message)
 
       result.hash[:envelope][:body][response_key][result_key]
     end
 
-    private
 
     # Private: Reads in an options hash and applies global default Settings
     # if applicable.  Options are converted into instance variables.
