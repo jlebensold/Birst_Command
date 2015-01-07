@@ -70,6 +70,9 @@ module Birst_Command
 
       message = args.last.is_a?(Hash) ? args.pop : {}
       pp "COOKIE"
+      pp @auth_cookie
+      @client.set_cookie @auth_cookie
+      return
       result = @client.call command_name,
                             cookies: [@auth_cookie],
                             message: { :token => @login_token }.merge(message)
